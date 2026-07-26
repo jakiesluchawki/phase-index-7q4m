@@ -317,6 +317,9 @@ export default function Portfolio() {
                   <div
                     className={`prototype-group ${prototypesOpen ? "is-open" : ""}`}
                     onPointerEnter={() => startBackgroundPreview(index)}
+                    onPointerMove={() => {
+                      if (hoveredShortcut !== index) startBackgroundPreview(index);
+                    }}
                     onPointerLeave={stopBackgroundPreview}
                     data-scroll-reveal
                     key={item.number}
@@ -326,7 +329,10 @@ export default function Portfolio() {
                       type="button"
                       aria-expanded={prototypesOpen}
                       aria-controls="prototype-list"
-                      onClick={() => setPrototypesOpen((value) => !value)}
+                      onClick={() => {
+                        startBackgroundPreview(index);
+                        setPrototypesOpen((value) => !value);
+                      }}
                       onFocus={() => startBackgroundPreview(index)}
                       onBlur={stopBackgroundPreview}
                     >
@@ -356,6 +362,9 @@ export default function Portfolio() {
                   target="_blank"
                   rel="noreferrer"
                   onPointerEnter={() => startBackgroundPreview(index)}
+                  onPointerMove={() => {
+                    if (hoveredShortcut !== index) startBackgroundPreview(index);
+                  }}
                   onPointerLeave={stopBackgroundPreview}
                   onFocus={() => startBackgroundPreview(index)}
                   onBlur={stopBackgroundPreview}
