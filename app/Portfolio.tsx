@@ -8,6 +8,18 @@ import { FieldCanvas } from "./FieldCanvas";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const asset = (path: string) => `${basePath}${path}`;
 
+const backgrounds = [
+  "/images/albin/20251127_Zgrywa_136.jpg",
+  "/images/albin/20251222_Zgrywa_058.jpg",
+  "/images/albin/20251222_Zgrywa_107.jpg",
+  "/images/albin/20251222_Zgrywa_164.jpg",
+  "/images/albin/20251222_Zgrywa_232.jpg",
+  "/images/albin/20251223_Zgrywa_051.jpg",
+  "/images/albin/20251223_Zgrywa_106.jpg",
+  "/images/albin/20251223_Zgrywa_152.jpg",
+  "/images/albin/20251223_Zgrywa_171.jpg",
+] as const;
+
 const shortcuts = [
   {
     number: "01",
@@ -15,6 +27,11 @@ const shortcuts = [
     name: "Zgrywa Studio",
     href: "https://www.zgrywastudio.com/",
     image: "/images/albin/20251222_Zgrywa_232.jpg",
+    gallery: [
+      "/images/albin/20251222_Zgrywa_232.jpg",
+      "/images/albin/20251127_Zgrywa_136.jpg",
+      "/images/albin/20251223_Zgrywa_106.jpg",
+    ],
     tone: "green",
   },
   {
@@ -23,6 +40,10 @@ const shortcuts = [
     name: "Generatywni",
     href: "https://generatywni.com/pl/team/mieszko-mahboob",
     image: "/images/albin/20251223_Zgrywa_152.jpg",
+    gallery: [
+      "/images/albin/20251223_Zgrywa_152.jpg",
+      "/images/albin/20251223_Zgrywa_171.jpg",
+    ],
     tone: "red",
   },
   {
@@ -30,6 +51,10 @@ const shortcuts = [
     label: "Prototypy i eksperymenty",
     name: "Prototypy",
     image: "/images/albin/20251223_Zgrywa_051.jpg",
+    gallery: [
+      "/images/albin/20251223_Zgrywa_051.jpg",
+      "/images/albin/20251222_Zgrywa_058.jpg",
+    ],
     tone: "pastel",
     projects: [
       {
@@ -55,6 +80,10 @@ const shortcuts = [
     name: "Futurama 3",
     href: "https://analogdigital.tv/work/quebonafide-futurama-3/",
     image: "/images/albin/20251222_Zgrywa_107.jpg",
+    gallery: [
+      "/images/albin/20251222_Zgrywa_107.jpg",
+      "/images/albin/20251222_Zgrywa_164.jpg",
+    ],
     tone: "violet",
   },
 ] as const;
@@ -65,7 +94,9 @@ function Arrow() {
 
 export default function Portfolio() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
+  const [activeShortcut, setActiveShortcut] = useState(0);
+  const [activeImage, setActiveImage] = useState<string>(shortcuts[0].image);
+  const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
   const [signal, setSignal] = useState(false);
   const [prototypesOpen, setPrototypesOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -95,6 +126,27 @@ export default function Portfolio() {
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (hoveredShortcut === null) return;
+
+    const gallery = shortcuts[hoveredShortcut].gallery;
+    let galleryIndex = 0;
+    let rotation: number | undefined;
+    const delay = window.setTimeout(() => {
+      galleryIndex = (galleryIndex + 1) % gallery.length;
+      setActiveImage(gallery[galleryIndex]);
+      rotation = window.setInterval(() => {
+        galleryIndex = (galleryIndex + 1) % gallery.length;
+        setActiveImage(gallery[galleryIndex]);
+      }, 1350);
+    }, 850);
+
+    return () => {
+      window.clearTimeout(delay);
+      if (rotation) window.clearInterval(rotation);
+    };
+  }, [hoveredShortcut]);
 
   useEffect(() => {
     const keyDown = (event: KeyboardEvent) => {
@@ -172,12 +224,20 @@ export default function Portfolio() {
     root.style.setProperty("--shift-y", `${(event.clientY / window.innerHeight - 0.5) * -14}px`);
   };
 
+  const startBackgroundPreview = (index: number) => {
+    setActiveShortcut(index);
+    setActiveImage(shortcuts[index].image);
+    setHoveredShortcut(index);
+  };
+
+  const stopBackgroundPreview = () => setHoveredShortcut(null);
+
   return (
     <div
       ref={rootRef}
-      className={`home tone-${shortcuts[active].tone} ${signal ? "is-signal" : ""}`}
+      className={`home tone-${shortcuts[activeShortcut].tone} ${signal ? "is-signal" : ""}`}
       style={{
-        "--active": active,
+        "--active": activeShortcut,
         "--loader-image": `url("${asset("/images/albin/20251222_Zgrywa_164.jpg")}")`,
         "--contact-image": `url("${asset("/images/albin/20251222_Zgrywa_058.jpg")}")`,
       } as CSSProperties}
@@ -195,12 +255,12 @@ export default function Portfolio() {
       </div>
 
       <div className="backgrounds" aria-hidden="true">
-        {shortcuts.map((item, index) => (
+        {backgrounds.map((image) => (
           <img
-            src={asset(item.image)}
+            src={asset(image)}
             alt=""
-            className={index === active ? "is-active" : ""}
-            key={item.image}
+            className={image === activeImage ? "is-active" : ""}
+            key={image}
             decoding="async"
           />
         ))}
@@ -210,7 +270,7 @@ export default function Portfolio() {
         <div className="pointer-mark"><i /><i /></div>
       </div>
 
-      <FieldCanvas mode={active} xray={signal} />
+      <FieldCanvas mode={activeShortcut} xray={signal} />
 
       <header className="topbar" data-fade>
         <a className="wordmark" href="#top" aria-label="Mieszko Mahboob, początek strony">
@@ -248,7 +308,7 @@ export default function Portfolio() {
         <section className="shortcut-section" id="links" aria-label="Wybrane linki">
           <div className="shortcut-heading">
             <p>Wybrane</p>
-            <p>Najedź, żeby zmienić tło</p>
+            <p>Najedź. Tła zmienią się.</p>
           </div>
           <div className="shortcut-list">
             {shortcuts.map((item, index) => {
@@ -256,7 +316,8 @@ export default function Portfolio() {
                 return (
                   <div
                     className={`prototype-group ${prototypesOpen ? "is-open" : ""}`}
-                    onPointerEnter={() => setActive(index)}
+                    onPointerEnter={() => startBackgroundPreview(index)}
+                    onPointerLeave={stopBackgroundPreview}
                     data-scroll-reveal
                     key={item.number}
                   >
@@ -266,7 +327,8 @@ export default function Portfolio() {
                       aria-expanded={prototypesOpen}
                       aria-controls="prototype-list"
                       onClick={() => setPrototypesOpen((value) => !value)}
-                      onFocus={() => setActive(index)}
+                      onFocus={() => startBackgroundPreview(index)}
+                      onBlur={stopBackgroundPreview}
                     >
                       <small>{item.number}</small>
                       <span>{item.label}</span>
@@ -293,8 +355,10 @@ export default function Portfolio() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  onPointerEnter={() => setActive(index)}
-                  onFocus={() => setActive(index)}
+                  onPointerEnter={() => startBackgroundPreview(index)}
+                  onPointerLeave={stopBackgroundPreview}
+                  onFocus={() => startBackgroundPreview(index)}
+                  onBlur={stopBackgroundPreview}
                   data-scroll-reveal
                   key={item.href}
                 >
