@@ -593,7 +593,11 @@ footer kbd {
 
   .intro { grid-template-rows: auto 1fr auto auto; }
   .roles { grid-column: 1 / 13; }
-  .intro h1 { font-size: clamp(4.1rem, 20vw, 8rem); }
+  .intro h1 {
+    font-size: clamp(3.35rem, 17vw, 6.75rem);
+    line-height: 0.78;
+    letter-spacing: -0.075em;
+  }
   .intro h1 > span:last-child { padding-left: 0; }
   .intro-note { grid-column: 1 / 11; }
   .intro-socials {
