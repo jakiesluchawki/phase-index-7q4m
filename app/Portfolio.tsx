@@ -3,10 +3,21 @@
 /* eslint-disable @next/next/no-img-element -- Local art-directed images crossfade as full-screen backgrounds. */
 
 import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Script from "next/script";
 import { FieldCanvas } from "./FieldCanvas";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const asset = (path: string) => `${basePath}${path}`;
+const contactGateUrl = process.env.NEXT_PUBLIC_CONTACT_GATE_URL ?? "";
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
+type TurnstileApi = {
+  remove: (widgetId: string) => void;
+  render: (container: HTMLElement, options: Record<string, unknown>) => string;
+  reset: (widgetId: string) => void;
+};
+
+const getTurnstile = () => (window as Window & { turnstile?: TurnstileApi }).turnstile;
 
 const backgrounds = [
   "/images/albin/20251127_Zgrywa_136.jpg",
@@ -94,6 +105,8 @@ function Arrow() {
 
 export default function Portfolio() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetRef = useRef<string | null>(null);
   const [activeShortcut, setActiveShortcut] = useState(0);
   const [activeImage, setActiveImage] = useState<string>(shortcuts[0].image);
   const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
@@ -101,6 +114,11 @@ export default function Portfolio() {
   const [prototypesOpen, setPrototypesOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [contactStatus, setContactStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [contactError, setContactError] = useState("");
+  const [revealedContact, setRevealedContact] = useState<{ email: string; phone: string } | null>(null);
 
   useEffect(() => {
     if (window.sessionStorage.getItem("mahboob-intro") === "seen") {
@@ -147,6 +165,34 @@ export default function Portfolio() {
       if (rotation) window.clearInterval(rotation);
     };
   }, [hoveredShortcut]);
+
+  useEffect(() => {
+    const container = turnstileRef.current;
+    const turnstile = getTurnstile();
+    if (!turnstileReady || !container || !turnstile || !turnstileSiteKey || turnstileWidgetRef.current) return;
+
+    turnstileWidgetRef.current = turnstile.render(container, {
+      sitekey: turnstileSiteKey,
+      appearance: "interaction-only",
+      size: "flexible",
+      theme: "dark",
+      callback: (token: string) => {
+        setTurnstileToken(token);
+        setContactError("");
+      },
+      "error-callback": () => {
+        setTurnstileToken("");
+        setContactStatus("error");
+        setContactError("Nie udało się uruchomić weryfikacji.");
+      },
+      "expired-callback": () => setTurnstileToken(""),
+    });
+
+    return () => {
+      if (turnstileWidgetRef.current) turnstile.remove(turnstileWidgetRef.current);
+      turnstileWidgetRef.current = null;
+    };
+  }, [turnstileReady]);
 
   useEffect(() => {
     const keyDown = (event: KeyboardEvent) => {
@@ -232,6 +278,33 @@ export default function Portfolio() {
 
   const stopBackgroundPreview = () => setHoveredShortcut(null);
 
+  const revealContact = async () => {
+    if (!turnstileToken || !contactGateUrl) {
+      setContactStatus("error");
+      setContactError("Poczekaj na zakończenie weryfikacji.");
+      return;
+    }
+
+    setContactStatus("loading");
+    setContactError("");
+    try {
+      const response = await fetch(contactGateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+      const result = await response.json() as { email?: string; phone?: string; error?: string };
+      if (!response.ok || !result.email || !result.phone) throw new Error(result.error ?? "Nie udało się pobrać danych.");
+      setRevealedContact({ email: result.email, phone: result.phone });
+      setContactStatus("idle");
+    } catch (error) {
+      setContactStatus("error");
+      setContactError(error instanceof Error ? error.message : "Nie udało się pobrać danych.");
+      setTurnstileToken("");
+      if (turnstileWidgetRef.current) getTurnstile()?.reset(turnstileWidgetRef.current);
+    }
+  };
+
   return (
     <div
       ref={rootRef}
@@ -246,6 +319,11 @@ export default function Portfolio() {
       onPointerUp={() => setSignal(false)}
       onPointerCancel={() => setSignal(false)}
     >
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        strategy="afterInteractive"
+        onReady={() => setTurnstileReady(true)}
+      />
       <a className="skip-link" href="#links">Przejdź do linków</a>
 
       <div className={`intro-loader ${loading ? "is-visible" : ""}`} aria-hidden={!loading}>
@@ -278,7 +356,7 @@ export default function Portfolio() {
           <span>Mieszko Mahboob</span>
         </a>
         <p>Warszawa</p>
-        <a href="mailto:contact@mahboob.pl">contact@mahboob.pl</a>
+        <a href="#contact">Kontakt</a>
       </header>
 
       <main id="top">
@@ -384,9 +462,23 @@ export default function Portfolio() {
         <section className="contact-section" id="contact" aria-labelledby="contact-title">
           <p>Kontakt</p>
           <h2 id="contact-title" data-scroll-reveal>Napisz albo zadzwoń.</h2>
-          <div className="contact-links" data-scroll-reveal>
-            <a href="mailto:contact@mahboob.pl">contact@mahboob.pl <Arrow /></a>
-            <a href="tel:+48607397993">+48 607 397 993 <Arrow /></a>
+          <div className="contact-gate" data-scroll-reveal>
+            {!revealedContact ? (
+              <>
+                <p>Dane kontaktowe pokażą się po krótkiej weryfikacji.</p>
+                <div className="turnstile-slot" ref={turnstileRef} />
+                <button type="button" onClick={revealContact} disabled={!turnstileToken || contactStatus === "loading"}>
+                  {contactStatus === "loading" ? "Sprawdzam…" : "Pokaż dane kontaktowe"}
+                  <span aria-hidden="true">→</span>
+                </button>
+                {contactError && <p className="contact-error" role="alert">{contactError}</p>}
+              </>
+            ) : (
+              <div className="revealed-contact" aria-live="polite">
+                <a href={`mailto:${revealedContact.email}`}>{revealedContact.email} <Arrow /></a>
+                <a href={`tel:${revealedContact.phone.replace(/\s/g, "")}`}>{revealedContact.phone} <Arrow /></a>
+              </div>
+            )}
           </div>
           <nav aria-label="Profile społecznościowe">
             <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer">LinkedIn</a>

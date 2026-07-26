@@ -524,25 +524,46 @@ footer {
   text-transform: uppercase;
 }
 
-.contact-links {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.contact-gate {
+  max-width: 58rem;
   border-top: 1px solid currentColor;
 }
 
-.contact-links a {
+.contact-gate > p {
+  max-width: 38ch;
+  margin: 0;
+  padding: 1.3rem 0;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+}
+
+.turnstile-slot { min-height: 0; }
+
+.contact-gate > button,
+.revealed-contact a {
+  width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 1.3rem 0;
   border-bottom: 1px solid currentColor;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  color: inherit;
   font-size: clamp(1.15rem, 2.3vw, 2.5rem);
+  text-align: left;
 }
 
-.contact-links a:first-child { margin-right: 2rem; }
-.contact-links a:last-child { margin-left: 2rem; }
-.contact-links a:hover span { transform: translate(0.2rem, -0.2rem); }
-.contact-links span { transition: transform 220ms var(--ease); }
+.contact-gate > button { cursor: pointer; }
+.contact-gate > button:disabled { cursor: wait; opacity: 0.48; }
+.contact-gate > button:hover:not(:disabled) span,
+.revealed-contact a:hover span { transform: translateX(0.3rem); }
+.contact-gate button span,
+.revealed-contact span { transition: transform 220ms var(--ease); }
+
+.contact-error { color: oklch(82% 0.13 25); }
 
 .contact-section nav {
   display: flex;
@@ -645,9 +666,7 @@ footer kbd {
 
   .contact-section { min-height: 100svh; }
   .contact-section h2 { font-size: clamp(3.8rem, 17vw, 7rem); }
-  .contact-links { display: block; }
-  .contact-links a:first-child,
-  .contact-links a:last-child { margin-inline: 0; }
+  .contact-gate { width: 100%; }
 
   footer { grid-template-columns: 1fr 1fr; gap: 1rem; padding-block: 1rem; }
   footer span:nth-child(2) { display: none; }

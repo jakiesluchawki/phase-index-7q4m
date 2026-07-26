@@ -16,6 +16,7 @@ Jedna spokojna, oszczędna wizytówka. Duże imię, krótki opis, lista linków 
 - Tło zmienia się natychmiast po najechaniu lub przejściu klawiaturą na wybrany link, a po krótkiej pauzie obraca przypisaną mini-galerię.
 - Pole WebGL, pierścienie sygnału, celownik i fotografia reagują na ruch kursora.
 - Krótki loader otwiera stronę tylko raz w danej sesji.
+- Dane kontaktowe nie trafiają do statycznego HTML; sekcja odsłania je dopiero po weryfikacji Turnstile.
 - Pasek sygnału i wejścia GSAP nadają rytm bez dodawania treści.
 - Przytrzymanie spacji, wskaźnika lub przycisk „Sygnał” wzmacnia warstwę graficzną.
 - Krótkie wejście typograficzne przy pierwszym załadowaniu.
