@@ -299,7 +299,10 @@ export default function Portfolio() {
       setContactStatus("idle");
     } catch (error) {
       setContactStatus("error");
-      setContactError(error instanceof Error ? error.message : "Nie udało się pobrać danych.");
+      const message = error instanceof Error && error.message !== "Failed to fetch"
+        ? error.message
+        : "Nie udało się połączyć. Spróbuj ponownie.";
+      setContactError(message);
       setTurnstileToken("");
       if (turnstileWidgetRef.current) getTurnstile()?.reset(turnstileWidgetRef.current);
     }

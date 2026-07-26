@@ -12,13 +12,17 @@ const allowedOrigins = new Set([
   "http://localhost:3000",
 ]);
 
+const corsHeaders = (origin: string) => ({
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Origin": origin,
+});
+
 const json = (body: unknown, status: number, origin: string) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Origin": origin,
+      ...corsHeaders(origin),
       "Cache-Control": "no-store",
       "Content-Type": "application/json; charset=utf-8",
       "Referrer-Policy": "no-referrer",
@@ -31,7 +35,9 @@ const worker = {
     const origin = request.headers.get("Origin") ?? "";
     if (!allowedOrigins.has(origin)) return new Response(null, { status: 403 });
 
-    if (request.method === "OPTIONS") return json({}, 204, origin);
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, origin);
 
     const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
