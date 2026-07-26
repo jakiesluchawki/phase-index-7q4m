@@ -389,7 +389,7 @@ export default function Portfolio() {
         <section className="shortcut-section" id="links" aria-label="Wybrane linki">
           <div className="shortcut-heading">
             <p>Wybrane</p>
-            <p>Najedź. Tła zmienią się.</p>
+            <p>Najedź na wybrany projekt — zmieni się zdjęcie w tle.</p>
           </div>
           <div className="shortcut-list">
             {shortcuts.map((item, index) => {
