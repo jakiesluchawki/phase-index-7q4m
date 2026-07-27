@@ -22,7 +22,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node justyna-redesign/scripts/build-mockup-data.mjs
       - run: node justyna-redesign/scripts/build-static-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
