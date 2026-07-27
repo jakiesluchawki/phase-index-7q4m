@@ -30,7 +30,7 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: /phase-index-7q4m
           NEXT_PUBLIC_SITE_URL: https://jakiesluchawki.github.io/phase-index-7q4m/
           NEXT_PUBLIC_CONTACT_GATE_URL: https://contact-gate-7q4m.mieszko-93c.workers.dev/
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAD_PN7jQaEntoxuu
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -9,6 +9,8 @@ type Attempt = { count: number; resetAt: number };
 const attempts = new Map<string, Attempt>();
 const allowedOrigins = new Set([
   "https://jakiesluchawki.github.io",
+  "https://mahboob.pl",
+  "https://www.mahboob.pl",
   "http://localhost:3000",
 ]);
 
