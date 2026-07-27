@@ -1,4 +1,4 @@
-name: Deploy temporary preview
+name: Deploy Justyna mockups
 
 on:
   push:
@@ -22,19 +22,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx next build
-        env:
-          GITHUB_PAGES: "true"
-          NEXT_PUBLIC_BASE_PATH: /phase-index-7q4m
-          NEXT_PUBLIC_SITE_URL: https://jakiesluchawki.github.io/phase-index-7q4m/
-          NEXT_PUBLIC_CONTACT_GATE_URL: https://contact-gate-7q4m.mieszko-93c.workers.dev/
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAD_PN7jQaEntoxuu
+      - run: node justyna-redesign/scripts/build-mockup-data.mjs
+      - run: node justyna-redesign/scripts/build-static-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: justyna-redesign/site
 
   deploy:
     environment:

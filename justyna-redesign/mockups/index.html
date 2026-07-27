@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Cute Cut — portfolio kolaży Justyny Mahboob." />
+    <title>Cute Cut — Justyna Mahboob</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="worktable">
+    <a class="skip-link" href="#gallery" data-i18n="skip">Przejdź do galerii</a>
+
+    <aside class="direction-picker" aria-label="Wybierz kierunek projektu" data-i18n-aria="directionPicker">
+      <span data-i18n="directionLabel">Kierunek</span>
+      <button class="direction is-active" data-direction="worktable" data-i18n="directionWorktable" aria-pressed="true">A · Stół</button>
+      <button class="direction" data-direction="pantry" data-i18n="directionPantry" aria-pressed="false">B · Kolor</button>
+      <button class="direction" data-direction="stage" data-i18n="directionStage" aria-pressed="false">C · Teatr</button>
+    </aside>
+
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Cute Cut, początek strony" data-i18n-aria="topLabel">
+        <img src="artwork/0286-cutecut.png" alt="" />
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#about" data-i18n="navAbout">O mnie</a>
+        <a href="#gallery" data-i18n="navGallery">Galeria</a>
+        <a href="#contact" data-i18n="navContact">Kontakt</a>
+        <span class="language-switch" aria-label="Język" data-i18n-aria="languageLabel">
+          <button type="button" data-lang="pl" class="is-active" aria-pressed="true">PL</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </span>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="opening" aria-label="Cute Cut" data-i18n-aria="openingLabel">
+        <img class="opening-paper" src="artwork/0270-login-screen.jpg" alt="" />
+        <img class="opening-logo" src="artwork/0286-cutecut.png" alt="Cute Cut" />
+        <img class="opening-signature" src="artwork/0042-podpis-czarny-bez-ta.png" alt="Justyna Mahboob" />
+        <a class="opening-enter" href="#portfolio"><span data-i18n="enter">Wejdź</span><span aria-hidden="true">↓</span></a>
+      </section>
+
+      <section class="hero" id="portfolio" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="heroEyebrow">Artystka kolażu · Warszawa</p>
+          <h1 id="hero-title"><span>Justyna</span> <span>Mahboob</span></h1>
+          <p class="hero-note" data-i18n="heroNote">Papier, kolor i codzienność.</p>
+          <a class="hero-link" href="#gallery"><span data-i18n="heroLink">Zobacz archiwum</span> <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art" aria-label="Selected works">
+          <img class="hero-image hero-image-one" src="artwork/0113-pomaranczka-niebieska-pol.jpg" alt="Orange collage on a blue-grey ground" />
+          <img class="hero-image hero-image-two" src="artwork/0237-lody-na-patyku-niebieskie-pol.jpg" alt="Two paper ice lollies on a blue-grey ground" />
+          <img class="hero-image hero-image-three" src="artwork/0246-zaparzacz2-pol.jpg" alt="Green coffee pot collage on a charcoal ground" />
+        </div>
+        <p class="direction-caption" aria-live="polite">Otwarty stół, na którym archiwum wygląda jak żywy zestaw papierowych obiektów.</p>
+      </section>
+
+      <section class="about" id="about" aria-labelledby="about-title">
+        <h2 id="about-title" data-i18n="aboutTitle">O mnie</h2>
+        <p data-i18n="aboutOne">Justyna Mahboob, urodzona w 1978 roku, jest artystką i edukatorką. Ukończyła Akademię Sztuk Pięknych w Warszawie, gdzie zajmowała się malarstwem i ilustracją książkową. Prowadzi warsztaty artystyczne dla młodych ludzi.</p>
+        <p data-i18n="aboutTwo">Obok malarstwa i ilustracji tworzy serię kolaży inspirowanych gotowaniem oraz kulturą kulinarną. Jej kuchenne wycinanki wydobywają estetykę materiałów opakowaniowych i łączą sztukę z codziennością.</p>
+      </section>
+
+      <section class="archive" id="gallery" aria-labelledby="gallery-title">
+        <div class="archive-heading">
+          <div>
+            <p class="eyebrow" data-i18n="archiveEyebrow">Pełne archiwum</p>
+            <h2 id="gallery-title" data-i18n="galleryTitle">Galeria</h2>
+          </div>
+          <p><span id="visible-count">0</span> <span data-i18n="worksLabel">prac</span></p>
+        </div>
+        <div class="filters" role="toolbar" aria-label="Filter works by category"></div>
+        <div class="art-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="contact" id="contact" aria-labelledby="contact-title">
+        <p class="eyebrow" data-i18n="contactEyebrow">Kontakt</p>
+        <h2 id="contact-title" data-i18n-html="contactTitle">Zróbmy coś<br />razem.</h2>
+        <a href="mailto:cutecut@mahboob.pl">cutecut@mahboob.pl</a>
+      </section>
+    </main>
+
+    <footer>
+      <span>© Cute Cut</span>
+      <span>Justyna Mahboob</span>
+    </footer>
+
+    <dialog class="viewer" aria-labelledby="viewer-title">
+      <div class="viewer-inner">
+        <button class="viewer-close" aria-label="Close artwork viewer">Close</button>
+        <button class="viewer-prev" aria-label="Previous artwork">←</button>
+        <figure>
+          <img class="viewer-image" alt="" />
+          <figcaption>
+            <strong id="viewer-title"></strong>
+            <span class="viewer-category"></span>
+          </figcaption>
+        </figure>
+        <button class="viewer-next" aria-label="Next artwork">→</button>
+      </div>
+    </dialog>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
