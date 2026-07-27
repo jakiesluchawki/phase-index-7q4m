@@ -34,7 +34,7 @@ const backgrounds = [
 const shortcuts = [
   {
     number: "01",
-    label: "Sound direction i postprodukcja",
+    label: "Sound engineering i postprodukcja",
     name: "Zgrywa Studio",
     href: "https://www.zgrywastudio.com/",
     image: "/images/albin/20251222_Zgrywa_232.jpg",
@@ -49,7 +49,7 @@ const shortcuts = [
     number: "02",
     label: "Creative AI i R&D",
     name: "Generatywni",
-    href: "https://generatywni.com/pl/team/mieszko-mahboob",
+    href: "https://generatywni.com/pl/",
     image: "/images/albin/20251223_Zgrywa_152.jpg",
     gallery: [
       "/images/albin/20251223_Zgrywa_152.jpg",
@@ -70,12 +70,12 @@ const shortcuts = [
     projects: [
       {
         name: "Kosmiczna Grawitacja",
-        description: "Interaktywna nauka fizyki i kosmosu.",
+        description: "Interaktywna nauka fizyki i kosmosu dla dzieci",
         href: "https://jakiesluchawki.github.io/kosmiczne-laboratorium/",
       },
       {
         name: "Chmurnik",
-        description: "Atlas chmur, pogody i atmosfery.",
+        description: "Atlas chmur, pogody i atmosfery. Nauka i rozpoznawanie.",
         href: "https://chmurnik.cloud/",
       },
       {
@@ -386,13 +386,13 @@ export default function Portfolio() {
 
       <main id="top">
         <section className="intro" aria-labelledby="name">
-          <p className="roles" data-fade>Sound director · Creative Leader · AI</p>
+          <p className="roles" data-fade>Sound engineer · Creative Leader · AI</p>
           <h1 id="name">
             <span><span data-enter>Mieszko</span></span>
             <span><span data-enter>Mahboob</span></span>
           </h1>
           <p className="intro-note" data-fade>
-            Zgrywa Studio i Generatywni.<br />Dźwięk, projekty kreatywne, narzędzia AI.
+            Zgrywa Studio / Generatywni.<br />Dźwięk, projekty kreatywne, narzędzia AI.
           </p>
           <nav className="intro-socials" aria-label="Profile społecznościowe — początek strony" data-fade>
             <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer" aria-label="LinkedIn — otwiera nową kartę">LinkedIn <Arrow /></a>
@@ -402,8 +402,8 @@ export default function Portfolio() {
           <a className="contact-jump" href="#contact" data-fade>Kontakt <span aria-hidden="true">↓</span></a>
           <div className="hero-ticker" aria-hidden="true">
             <div>
-              <span>Sound direction</span><i>✦</i><span>Creative AI</span><i>✦</i><span>Zgrywa Studio</span><i>✦</i><span>Generatywni</span><i>✦</i>
-              <span>Sound direction</span><i>✦</i><span>Creative AI</span><i>✦</i><span>Zgrywa Studio</span><i>✦</i><span>Generatywni</span><i>✦</i>
+              <span>Sound engineering</span><i>✦</i><span>Creative AI</span><i>✦</i><span>Zgrywa Studio</span><i>✦</i><span>Generatywni</span><i>✦</i>
+              <span>Sound engineering</span><i>✦</i><span>Creative AI</span><i>✦</i><span>Zgrywa Studio</span><i>✦</i><span>Generatywni</span><i>✦</i>
             </div>
           </div>
         </section>
@@ -411,7 +411,7 @@ export default function Portfolio() {
         <section className="shortcut-section" id="links" aria-label="Wybrane linki">
           <div className="shortcut-heading">
             <p>Wybrane</p>
-            <p>Najedź na wybrany projekt — zmieni się zdjęcie w tle.</p>
+            <p>Najedź na wybrany projekt</p>
           </div>
           <div className="shortcut-list">
             {shortcuts.map((item, index) => {

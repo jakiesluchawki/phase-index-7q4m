@@ -7,14 +7,14 @@ const socialImage = new URL("og.jpg", siteUrl.endsWith("/") ? siteUrl : `${siteU
 
 export const metadata: Metadata = {
   title: "Mieszko Mahboob",
-  description: "Sound director, Creative Leader i twórca projektów AI. Warszawa.",
+  description: "Sound engineer, Creative Leader i twórca projektów AI. Warszawa.",
   metadataBase: new URL(siteUrl),
   icons: {
     icon: `${basePath}/brand/zgrywa-symbol.svg`,
   },
   openGraph: {
     title: "Mieszko Mahboob",
-    description: "Sound director, Creative Leader i twórca projektów AI. Warszawa.",
+    description: "Sound engineer, Creative Leader i twórca projektów AI. Warszawa.",
     type: "website",
     images: [
       {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Mieszko Mahboob",
-    description: "Sound director, Creative Leader i twórca projektów AI. Warszawa.",
+    description: "Sound engineer, Creative Leader i twórca projektów AI. Warszawa.",
     images: [socialImage],
   },
 };
