@@ -109,7 +109,11 @@ export function FieldCanvas({ mode, xray }: FieldCanvasProps) {
 
   useEffect(() => {
     const mount = mountRef.current;
-    if (!mount || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      !mount
+      || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      || window.matchMedia("(pointer: coarse)").matches
+    ) {
       return;
     }
 

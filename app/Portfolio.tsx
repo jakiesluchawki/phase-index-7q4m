@@ -107,6 +107,8 @@ export default function Portfolio() {
   const rootRef = useRef<HTMLDivElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileWidgetRef = useRef<string | null>(null);
+  const pointerFrameRef = useRef<number | null>(null);
+  const pointerPositionRef = useRef({ x: 0, y: 0 });
   const [activeShortcut, setActiveShortcut] = useState(0);
   const [activeImage, setActiveImage] = useState<string>(shortcuts[0].image);
   const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
@@ -143,6 +145,10 @@ export default function Portfolio() {
     };
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => () => {
+    if (pointerFrameRef.current !== null) window.cancelAnimationFrame(pointerFrameRef.current);
   }, []);
 
   useEffect(() => {
@@ -262,12 +268,20 @@ export default function Portfolio() {
   }, []);
 
   const moveLight = (event: React.PointerEvent<HTMLDivElement>) => {
-    const root = rootRef.current;
-    if (!root || event.pointerType === "touch") return;
-    root.style.setProperty("--pointer-x", `${event.clientX}px`);
-    root.style.setProperty("--pointer-y", `${event.clientY}px`);
-    root.style.setProperty("--shift-x", `${(event.clientX / window.innerWidth - 0.5) * -18}px`);
-    root.style.setProperty("--shift-y", `${(event.clientY / window.innerHeight - 0.5) * -14}px`);
+    if (!rootRef.current || event.pointerType === "touch") return;
+    pointerPositionRef.current = { x: event.clientX, y: event.clientY };
+    if (pointerFrameRef.current !== null) return;
+
+    pointerFrameRef.current = window.requestAnimationFrame(() => {
+      const root = rootRef.current;
+      const { x, y } = pointerPositionRef.current;
+      pointerFrameRef.current = null;
+      if (!root) return;
+      root.style.setProperty("--pointer-x", `${x}px`);
+      root.style.setProperty("--pointer-y", `${y}px`);
+      root.style.setProperty("--shift-x", `${(x / window.innerWidth - 0.5) * -18}px`);
+      root.style.setProperty("--shift-y", `${(y / window.innerHeight - 0.5) * -14}px`);
+    });
   };
 
   const startBackgroundPreview = (index: number) => {
@@ -318,13 +332,19 @@ export default function Portfolio() {
         "--contact-image": `url("${asset("/images/albin/20251222_Zgrywa_058.jpg")}")`,
       } as CSSProperties}
       onPointerMove={moveLight}
-      onPointerDown={() => setSignal(true)}
-      onPointerUp={() => setSignal(false)}
-      onPointerCancel={() => setSignal(false)}
+      onPointerDown={(event) => {
+        if (event.pointerType !== "touch") setSignal(true);
+      }}
+      onPointerUp={(event) => {
+        if (event.pointerType !== "touch") setSignal(false);
+      }}
+      onPointerCancel={(event) => {
+        if (event.pointerType !== "touch") setSignal(false);
+      }}
     >
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         onReady={() => setTurnstileReady(true)}
       />
       <a className="skip-link" href="#links">Przejdź do linków</a>
@@ -343,6 +363,8 @@ export default function Portfolio() {
             className={image === activeImage ? "is-active" : ""}
             key={image}
             decoding="async"
+            loading={image === shortcuts[0].image ? "eager" : "lazy"}
+            fetchPriority={image === shortcuts[0].image ? "high" : "low"}
           />
         ))}
         <div className="background-wash" />
@@ -372,10 +394,10 @@ export default function Portfolio() {
           <p className="intro-note" data-fade>
             Zgrywa Studio i Generatywni.<br />Dźwięk, projekty kreatywne, narzędzia AI.
           </p>
-          <nav className="intro-socials" aria-label="Profile społecznościowe" data-fade>
-            <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer">LinkedIn <Arrow /></a>
-            <a href="https://www.instagram.com/mahboob" target="_blank" rel="noreferrer">Instagram <Arrow /></a>
-            <a href="https://x.com/mieszkomahboob" target="_blank" rel="noreferrer">X <Arrow /></a>
+          <nav className="intro-socials" aria-label="Profile społecznościowe — początek strony" data-fade>
+            <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer" aria-label="LinkedIn — otwiera nową kartę">LinkedIn <Arrow /></a>
+            <a href="https://www.instagram.com/mahboob" target="_blank" rel="noreferrer" aria-label="Instagram — otwiera nową kartę">Instagram <Arrow /></a>
+            <a href="https://x.com/mieszkomahboob" target="_blank" rel="noreferrer" aria-label="X — otwiera nową kartę">X <Arrow /></a>
           </nav>
           <a className="contact-jump" href="#contact" data-fade>Kontakt <span aria-hidden="true">↓</span></a>
           <div className="hero-ticker" aria-hidden="true">
@@ -422,10 +444,15 @@ export default function Portfolio() {
                       <strong>{item.name}</strong>
                       <span className="prototype-toggle" aria-hidden="true">{prototypesOpen ? "−" : "+"}</span>
                     </button>
-                    <div className="prototype-panel" id="prototype-list">
+                    <div
+                      className="prototype-panel"
+                      id="prototype-list"
+                      aria-hidden={!prototypesOpen}
+                      inert={!prototypesOpen ? true : undefined}
+                    >
                       <div className="prototype-panel-inner">
                         {item.projects.map((project) => (
-                          <a className="prototype-project" href={project.href} target="_blank" rel="noreferrer" key={project.href}>
+                          <a className="prototype-project" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.name} — otwiera nową kartę`} key={project.href}>
                             <strong>{project.name}</strong>
                             <span>{project.description}</span>
                             <Arrow />
@@ -465,12 +492,12 @@ export default function Portfolio() {
         <section className="contact-section" id="contact" aria-labelledby="contact-title">
           <p>Kontakt</p>
           <h2 id="contact-title" data-scroll-reveal>Napisz albo zadzwoń.</h2>
-          <div className="contact-gate" data-scroll-reveal>
+          <div className="contact-gate" data-scroll-reveal aria-busy={contactStatus === "loading"}>
             {!revealedContact ? (
               <>
-                <p>Dane kontaktowe pokażą się po krótkiej weryfikacji.</p>
+                <p id="contact-helper">Dane kontaktowe pokażą się po krótkiej weryfikacji.</p>
                 <div className="turnstile-slot" ref={turnstileRef} />
-                <button type="button" onClick={revealContact} disabled={!turnstileToken || contactStatus === "loading"}>
+                <button type="button" onClick={revealContact} disabled={!turnstileToken || contactStatus === "loading"} aria-describedby="contact-helper">
                   {contactStatus === "loading" ? "Sprawdzam…" : "Pokaż dane kontaktowe"}
                   <span aria-hidden="true">→</span>
                 </button>
@@ -483,10 +510,10 @@ export default function Portfolio() {
               </div>
             )}
           </div>
-          <nav aria-label="Profile społecznościowe">
-            <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer">LinkedIn</a>
-            <a href="https://www.instagram.com/mahboob" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://x.com/mieszkomahboob" target="_blank" rel="noreferrer">X</a>
+          <nav aria-label="Profile społecznościowe — kontakt">
+            <a href="https://www.linkedin.com/in/mieszkomahboob" target="_blank" rel="noreferrer" aria-label="LinkedIn — otwiera nową kartę">LinkedIn</a>
+            <a href="https://www.instagram.com/mahboob" target="_blank" rel="noreferrer" aria-label="Instagram — otwiera nową kartę">Instagram</a>
+            <a href="https://x.com/mieszkomahboob" target="_blank" rel="noreferrer" aria-label="X — otwiera nową kartę">X</a>
           </nav>
         </section>
       </main>
