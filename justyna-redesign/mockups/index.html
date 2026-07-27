@@ -8,15 +8,8 @@
     <link rel="icon" href="artwork/0286-cutecut.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body data-theme="worktable">
+  <body data-theme="pantry">
     <a class="skip-link" href="#gallery" data-i18n="skip">Przejdź do galerii</a>
-
-    <aside class="direction-picker" aria-label="Wybierz kierunek projektu" data-i18n-aria="directionPicker">
-      <span data-i18n="directionLabel">Kierunek</span>
-      <button class="direction is-active" data-direction="worktable" data-i18n="directionWorktable" aria-pressed="true">A · Stół</button>
-      <button class="direction" data-direction="pantry" data-i18n="directionPantry" aria-pressed="false">B · Kolor</button>
-      <button class="direction" data-direction="stage" data-i18n="directionStage" aria-pressed="false">C · Teatr</button>
-    </aside>
 
     <header class="site-header">
       <a class="wordmark" href="#top" aria-label="Cute Cut, początek strony" data-i18n-aria="topLabel">
@@ -70,7 +63,17 @@
           </div>
           <p><span id="visible-count">0</span> <span data-i18n="worksLabel">prac</span></p>
         </div>
-        <div class="filters" role="toolbar" aria-label="Filter works by category"></div>
+        <div class="filters" role="toolbar" aria-label="Filtruj prace według kategorii" data-i18n-aria="filtersLabel"></div>
+        <div class="gallery-navigation" aria-label="Nawigacja galerii" data-i18n-aria="galleryNavigation">
+          <div class="gallery-navigation-copy">
+            <span data-i18n="galleryHint">Przeciągnij galerię lub użyj strzałek</span>
+            <span class="gallery-progress" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="gallery-arrows">
+            <button class="gallery-prev" type="button" aria-label="Poprzednie prace" disabled>←</button>
+            <button class="gallery-next" type="button" aria-label="Następne prace">→</button>
+          </div>
+        </div>
         <div class="art-grid" aria-live="polite"></div>
       </section>
 

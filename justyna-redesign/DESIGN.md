@@ -19,9 +19,11 @@ A curator and a parent browse the archive in afternoon daylight, close enough to
 
 Warm, pale ground with an asymmetric field of works. A few collages overlap the title at the opening, then settle into an open archive. Typography is sturdy, friendly and quiet.
 
-## Direction B, Colour Pantry
+## Selected direction, Colour Pantry
 
 A saturated categorical index derived from the background colours in the collages. Each category becomes a full-width colour room with a horizontal rail of works. The visual identity feels bold and immediately recognisable.
+
+The horizontal rail always exposes its interaction: visible previous and next controls, a progress rule, a concise drag instruction, a grab cursor for mouse input and native swipe on touch screens. Controls disable at the beginning and end of the rail.
 
 ## Direction C, Cut-out Stage
 

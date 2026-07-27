@@ -8,11 +8,13 @@ const viewer = document.querySelector(".viewer");
 const viewerImage = document.querySelector(".viewer-image");
 const viewerTitle = document.querySelector("#viewer-title");
 const viewerCategory = document.querySelector(".viewer-category");
+const galleryPrevious = document.querySelector(".gallery-prev");
+const galleryNext = document.querySelector(".gallery-next");
+const galleryProgress = document.querySelector(".gallery-progress");
 const categories = ["All", "Food", "Fruits & vegetables", "Meat", "Drinks", "Cakes", "Things"];
 const copy = {
   pl: {
-    skip: "Przejdź do galerii", directionPicker: "Wybierz kierunek projektu", directionLabel: "Kierunek",
-    directionWorktable: "A · Stół", directionPantry: "B · Kolor", directionStage: "C · Teatr",
+    skip: "Przejdź do galerii",
     topLabel: "Cute Cut, początek strony", languageLabel: "Język", openingLabel: "Ekran otwierający Cute Cut", enter: "Wejdź",
     navAbout: "O mnie", navGallery: "Galeria", navContact: "Kontakt", heroEyebrow: "Artystka kolażu · Warszawa",
     heroNote: "Papier, kolor i codzienność.", heroLink: "Zobacz archiwum", aboutTitle: "O mnie",
@@ -20,10 +22,11 @@ const copy = {
     aboutTwo: "Obok malarstwa i ilustracji tworzy serię kolaży inspirowanych gotowaniem oraz kulturą kulinarną. Jej kuchenne wycinanki wydobywają estetykę materiałów opakowaniowych i łączą sztukę z codziennością.",
     archiveEyebrow: "Pełne archiwum", galleryTitle: "Galeria", worksLabel: "prac", contactEyebrow: "Kontakt",
     contactTitle: "Zróbmy coś<br />razem.", openArtwork: "Otwórz", close: "Zamknij", previous: "Poprzednia praca", next: "Następna praca",
+    filtersLabel: "Filtruj prace według kategorii", galleryNavigation: "Nawigacja galerii", galleryHint: "Przeciągnij galerię lub użyj strzałek", galleryPrevious: "Poprzednie prace", galleryNext: "Następne prace",
+    directionCaption: "Barwny indeks, w którym każda kategoria otwiera własną papierową przestrzeń.",
   },
   en: {
-    skip: "Skip to gallery", directionPicker: "Choose a design direction", directionLabel: "Direction",
-    directionWorktable: "A · Table", directionPantry: "B · Colour", directionStage: "C · Stage",
+    skip: "Skip to gallery",
     topLabel: "Cute Cut, top of page", languageLabel: "Language", openingLabel: "Cute Cut opening screen", enter: "Enter",
     navAbout: "About", navGallery: "Gallery", navContact: "Contact", heroEyebrow: "Collage artist · Warsaw",
     heroNote: "Paper, colour and everyday things.", heroLink: "See the archive", aboutTitle: "About",
@@ -31,6 +34,8 @@ const copy = {
     aboutTwo: "Alongside painting and illustration, she has created a series of collages inspired by moments spent cooking and the popular culture of culinary arts. Her kitchen-themed collages highlight the aesthetic appeal of packaging materials, bringing art and everyday life together.",
     archiveEyebrow: "Complete archive", galleryTitle: "Gallery", worksLabel: "works", contactEyebrow: "Contact",
     contactTitle: "Let’s make<br />something.", openArtwork: "Open", close: "Close", previous: "Previous artwork", next: "Next artwork",
+    filtersLabel: "Filter works by category", galleryNavigation: "Gallery navigation", galleryHint: "Drag the gallery or use the arrows", galleryPrevious: "Previous works", galleryNext: "Next works",
+    directionCaption: "A vivid index where every category opens its own paper room.",
   },
 };
 const categoryNames = {
@@ -46,23 +51,9 @@ const categoryColours = {
   Cakes: "oklch(0.84 0.13 73)",
   Things: "oklch(0.72 0.12 307)",
 };
-const directionCopy = {
-  pl: {
-    worktable: "Otwarty stół, na którym archiwum wygląda jak żywy zestaw papierowych obiektów.",
-    pantry: "Barwny indeks, w którym każda kategoria otwiera własną papierową przestrzeń.",
-    stage: "Skupiona scena, na której każdy kolaż staje się osobnym wyciętym obiektem.",
-  },
-  en: {
-    worktable: "An open table where the archive becomes a living set of paper objects.",
-    pantry: "A vivid index where every category opens its own paper room.",
-    stage: "A focused stage where every collage becomes a distinct cut-out object.",
-  },
-};
-
 let activeCategory = "All";
 let visibleWorks = [];
 let viewerIndex = 0;
-let activeDirection = "worktable";
 let activeLanguage = new URLSearchParams(location.search).get("lang") === "en" ? "en" : "pl";
 
 function cleanTitle(title) {
@@ -110,7 +101,72 @@ function renderGallery() {
     button.addEventListener("click", () => openViewer(index));
     return button;
   }));
+  requestAnimationFrame(() => {
+    grid.scrollLeft = 0;
+    updateGalleryNavigation();
+  });
 }
+
+function updateGalleryNavigation() {
+  const maximum = Math.max(0, grid.scrollWidth - grid.clientWidth);
+  const progress = maximum > 0 ? Math.min(1, Math.max(0, grid.scrollLeft / maximum)) : 1;
+  galleryProgress.style.setProperty("--gallery-progress", String(progress));
+  galleryPrevious.disabled = grid.scrollLeft <= 2;
+  galleryNext.disabled = grid.scrollLeft >= maximum - 2 || maximum === 0;
+}
+
+function scrollGallery(direction) {
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  grid.scrollBy({
+    left: direction * Math.max(280, grid.clientWidth * 0.82),
+    behavior: reducedMotion ? "auto" : "smooth",
+  });
+}
+
+galleryPrevious.addEventListener("click", () => scrollGallery(-1));
+galleryNext.addEventListener("click", () => scrollGallery(1));
+grid.addEventListener("scroll", updateGalleryNavigation, { passive: true });
+window.addEventListener("resize", updateGalleryNavigation);
+
+let dragStartX = 0;
+let dragStartScroll = 0;
+let galleryWasDragged = false;
+let suppressGalleryClick = false;
+
+grid.addEventListener("pointerdown", (event) => {
+  if (event.pointerType !== "mouse" || event.button !== 0) return;
+  dragStartX = event.clientX;
+  dragStartScroll = grid.scrollLeft;
+  galleryWasDragged = false;
+  grid.setPointerCapture(event.pointerId);
+});
+
+grid.addEventListener("pointermove", (event) => {
+  if (!grid.hasPointerCapture(event.pointerId)) return;
+  const distance = event.clientX - dragStartX;
+  if (Math.abs(distance) > 6) {
+    galleryWasDragged = true;
+    grid.classList.add("is-dragging");
+    grid.scrollLeft = dragStartScroll - distance;
+    event.preventDefault();
+  }
+});
+
+grid.addEventListener("pointerup", (event) => {
+  if (grid.hasPointerCapture(event.pointerId)) grid.releasePointerCapture(event.pointerId);
+  grid.classList.remove("is-dragging");
+  if (galleryWasDragged) {
+    suppressGalleryClick = true;
+    setTimeout(() => { suppressGalleryClick = false; }, 0);
+  }
+});
+grid.addEventListener("pointercancel", () => grid.classList.remove("is-dragging"));
+
+grid.addEventListener("click", (event) => {
+  if (!suppressGalleryClick) return;
+  event.preventDefault();
+  event.stopPropagation();
+}, true);
 
 function showViewerItem(index) {
   viewerIndex = (index + visibleWorks.length) % visibleWorks.length;
@@ -135,24 +191,9 @@ viewer.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") showViewerItem(viewerIndex + 1);
 });
 
-document.querySelectorAll(".direction").forEach((button) => {
-  button.addEventListener("click", () => {
-    const direction = button.dataset.direction;
-    activeDirection = direction;
-    body.dataset.theme = direction;
-    document.querySelectorAll(".direction").forEach((item) => {
-      const active = item === button;
-      item.classList.toggle("is-active", active);
-      item.setAttribute("aria-pressed", String(active));
-    });
-    caption.textContent = directionCopy[activeLanguage][direction];
-    updateUrl();
-  });
-});
-
 function updateUrl() {
   const params = new URLSearchParams(location.search);
-  params.set("direction", activeDirection);
+  params.delete("direction");
   params.set("lang", activeLanguage);
   history.replaceState(null, "", `${location.pathname}?${params}`);
 }
@@ -173,7 +214,9 @@ function setLanguage(language) {
   document.querySelector(".viewer-close").setAttribute("aria-label", copy[language].close);
   document.querySelector(".viewer-prev").setAttribute("aria-label", copy[language].previous);
   document.querySelector(".viewer-next").setAttribute("aria-label", copy[language].next);
-  caption.textContent = directionCopy[language][activeDirection];
+  galleryPrevious.setAttribute("aria-label", copy[language].galleryPrevious);
+  galleryNext.setAttribute("aria-label", copy[language].galleryNext);
+  caption.textContent = copy[language].directionCaption;
   renderFilters();
   renderGallery();
   updateUrl();
@@ -181,14 +224,10 @@ function setLanguage(language) {
 
 document.querySelectorAll("[data-lang]").forEach((button) => button.addEventListener("click", () => setLanguage(button.dataset.lang)));
 
-const initialDirection = new URLSearchParams(location.search).get("direction");
-if (["worktable", "pantry", "stage"].includes(initialDirection)) {
-  document.querySelector(`[data-direction="${initialDirection}"]`).click();
-}
-
 body.style.setProperty("--category-colour", categoryColours.All);
 setLanguage(activeLanguage);
 
-if (new URLSearchParams(location.search).get("section") === "portfolio") {
-  requestAnimationFrame(() => document.querySelector("#portfolio").scrollIntoView());
+const requestedSection = new URLSearchParams(location.search).get("section");
+if (["portfolio", "gallery"].includes(requestedSection)) {
+  requestAnimationFrame(() => document.querySelector(`#${requestedSection}`).scrollIntoView());
 }

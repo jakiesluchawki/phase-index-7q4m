@@ -116,7 +116,7 @@ button { color: inherit; }
 }
 .opening:hover .opening-logo { transform: translate(-50%, -53%) rotate(1deg) scale(1.035); }
 .opening-signature { position: absolute; z-index: 2; left: 50%; bottom: 6vh; width: clamp(10rem, 20vw, 18rem); transform: translateX(-50%); }
-.opening-enter { position: absolute; z-index: 3; right: var(--page-pad); bottom: 4.8rem; display: inline-flex; gap: 0.7rem; text-underline-offset: 0.4em; }
+.opening-enter { position: absolute; z-index: 3; right: var(--page-pad); bottom: var(--page-pad); display: inline-flex; gap: 0.7rem; text-underline-offset: 0.4em; }
 
 .hero {
   position: relative;
@@ -208,6 +208,38 @@ h1 span { display: block; }
 .filter:nth-child(3n) { transform: rotate(0.9deg); }
 .filter.is-active { background: var(--ink); color: var(--paper); transform: translateY(-2px) rotate(-1deg); }
 
+.gallery-navigation {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 0 0 1.15rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+.gallery-navigation-copy { display: grid; gap: 0.7rem; width: min(34rem, 62vw); font-size: 0.88rem; }
+.gallery-navigation-copy > span:first-child::after { content: "  ↔"; font-size: 1.15em; }
+.gallery-progress { display: block; height: 3px; overflow: hidden; background: color-mix(in oklch, var(--ink) 22%, transparent); }
+.gallery-progress i { display: block; width: 100%; height: 100%; background: var(--ink); transform: scaleX(var(--gallery-progress, 0)); transform-origin: left center; transition: transform 180ms linear; }
+.gallery-arrows { display: flex; gap: 0.4rem; }
+.gallery-arrows button {
+  display: grid;
+  width: 3.6rem;
+  height: 3.35rem;
+  place-items: center;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  clip-path: polygon(4% 2%, 96% 0, 100% 88%, 91% 100%, 0 95%);
+  font-size: 1.45rem;
+  cursor: pointer;
+  transition: transform 220ms var(--ease), opacity 220ms var(--ease), background-color 220ms var(--ease);
+}
+.gallery-arrows button:nth-child(2) { clip-path: polygon(0 5%, 92% 0, 100% 8%, 97% 96%, 7% 100%, 2% 91%); }
+.gallery-arrows button:hover:not(:disabled) { transform: translateY(-3px) rotate(-1deg); }
+.gallery-arrows button:active:not(:disabled) { transform: translateY(0); }
+.gallery-arrows button:disabled { opacity: 0.28; cursor: default; }
+
 .art-grid { columns: 4 16rem; column-gap: clamp(0.75rem, 1.5vw, 1.5rem); }
 .artwork {
   width: 100%;
@@ -276,7 +308,14 @@ body[data-theme="pantry"] .about p:first-of-type { background: oklch(0.95 0.11 6
 body[data-theme="pantry"] .about p:last-child { background: oklch(0.86 0.13 326); }
 body[data-theme="pantry"] .archive { background: var(--category-colour, oklch(0.72 0.15 245)); transition: background-color 450ms var(--ease); }
 body[data-theme="pantry"] .art-grid { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(18rem, 28vw); gap: 1rem; overflow-x: auto; columns: initial; padding: 1rem 0 2rem; scroll-snap-type: x mandatory; }
+body[data-theme="pantry"] .art-grid { scrollbar-color: var(--ink) color-mix(in oklch, var(--ink) 16%, transparent); scrollbar-width: thin; }
+body[data-theme="pantry"] .art-grid::-webkit-scrollbar { height: 8px; }
+body[data-theme="pantry"] .art-grid::-webkit-scrollbar-track { background: color-mix(in oklch, var(--ink) 16%, transparent); }
+body[data-theme="pantry"] .art-grid::-webkit-scrollbar-thumb { background: var(--ink); }
 body[data-theme="pantry"] .artwork { margin: 0; scroll-snap-align: start; }
+body[data-theme="pantry"] .artwork { cursor: grab; }
+body[data-theme="pantry"] .art-grid.is-dragging { scroll-snap-type: none; user-select: none; }
+body[data-theme="pantry"] .art-grid.is-dragging .artwork { cursor: grabbing; }
 body[data-theme="pantry"] .artwork img { height: min(67vh, 46rem); object-fit: contain; background: oklch(0.96 0.01 90 / 24%); }
 body[data-theme="pantry"] .contact { background: oklch(0.49 0.17 323); color: oklch(0.96 0.01 80); }
 body[data-theme="pantry"] footer { background: oklch(0.49 0.17 323); }
@@ -317,7 +356,7 @@ body[data-theme="stage"] footer { background: oklch(0.73 0.17 135); color: oklch
   .opening-paper { object-position: 48% center; }
   .opening-logo { width: min(47vw, 12rem); top: 47%; }
   .opening-signature { width: min(49vw, 12rem); bottom: 10vh; }
-  .opening-enter { right: 1rem; bottom: 4.65rem; }
+  .opening-enter { right: 1rem; bottom: 1.25rem; }
   .hero, body[data-theme="pantry"] .hero { grid-template-columns: 1fr; align-items: start; padding-top: 9rem; }
   h1, body[data-theme="pantry"] h1 { max-width: 100%; font-size: clamp(3.7rem, 18vw, 5.5rem); line-height: 0.82; letter-spacing: -0.075em; }
   .hero-art { min-height: 54vh; }
@@ -330,6 +369,9 @@ body[data-theme="stage"] footer { background: oklch(0.73 0.17 135); color: oklch
   .about, body[data-theme="stage"] .about { grid-template-columns: 1fr; }
   .about h2 { margin-bottom: 0; }
   .archive-heading { align-items: start; }
+  .gallery-navigation { align-items: center; gap: 1rem; }
+  .gallery-navigation-copy { width: min(100%, 16rem); font-size: 0.78rem; }
+  .gallery-arrows button { width: 3rem; height: 3rem; }
   .art-grid { columns: 2 9rem; }
   body[data-theme="pantry"] .art-grid { grid-auto-columns: 76vw; }
   body[data-theme="stage"] .hero-art { inset: 25vh 0 3vh; }
